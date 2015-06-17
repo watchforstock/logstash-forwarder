@@ -1,4 +1,4 @@
-package main
+package logstash
 
 type FileState struct {
   Source *string `json:"source,omitempty"`

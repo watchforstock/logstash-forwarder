@@ -1,4 +1,4 @@
-package main
+package logstash
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
-	"io/ioutil"
+	//"io/ioutil"
 	"math/rand"
 	"net"
 	"os"
@@ -132,23 +132,24 @@ func connect(config *NetworkConfig) (socket *tls.Conn) {
 	tlsconfig.MinVersion = tls.VersionTLS10
 
 	if len(config.SSLCertificate) > 0 && len(config.SSLKey) > 0 {
-		emit("Loading client ssl certificate: %s and %s\n",
-			config.SSLCertificate, config.SSLKey)
-		cert, err := tls.LoadX509KeyPair(config.SSLCertificate, config.SSLKey)
+		//	emit("Loading client ssl certificate: %s and %s\n",
+		//		config.SSLCertificate, config.SSLKey)
+		cert, err := tls.X509KeyPair([]byte(config.SSLCertificate), []byte(config.SSLKey))
 		if err != nil {
-			fault ("Failed loading client ssl certificate: %s\n", err)
+			fault("Failed loading client ssl certificate: %s\n", err)
 		}
 		tlsconfig.Certificates = []tls.Certificate{cert}
 	}
 
 	if len(config.SSLCA) > 0 {
-		emit("Setting trusted CA from file: %s\n", config.SSLCA)
+		//	emit("Setting trusted CA from file: %s\n", config.SSLCA)
 		tlsconfig.RootCAs = x509.NewCertPool()
 
-		pemdata, err := ioutil.ReadFile(config.SSLCA)
-		if err != nil {
-			fault("Failure reading CA certificate: %s\n", err)
-		}
+		//pemdata, err := ioutil.ReadFile(config.SSLCA)
+		pemdata := []byte(config.SSLCA)
+		//		if err != nil {
+		//			fault("Failure reading CA certificate: %s\n", err)
+		//		}
 
 		block, _ := pem.Decode(pemdata)
 		if block == nil {
@@ -222,7 +223,7 @@ func connect(config *NetworkConfig) (socket *tls.Conn) {
 }
 
 func writeDataFrame(event *FileEvent, sequence uint32, output io.Writer) {
-	//emit("event: %s\n", *event.Text)
+	emit("event: %s\n", *event.Text)
 	// header, "1D"
 	output.Write([]byte("1D"))
 	// sequence number
