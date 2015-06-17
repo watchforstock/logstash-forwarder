@@ -223,7 +223,7 @@ func connect(config *NetworkConfig) (socket *tls.Conn) {
 }
 
 func writeDataFrame(event *FileEvent, sequence uint32, output io.Writer) {
-	emit("event: %s\n", *event.Text)
+//	emit("event: %s\n", *event.Text)
 	// header, "1D"
 	output.Write([]byte("1D"))
 	// sequence number
